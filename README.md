@@ -1,5 +1,8 @@
 # github_unfollower.py
 
+[![Build status](https://travis-ci.org/arnavb/github_unfollower.py.svg?branch=master)](https://travis-ci.org/arnavb/github_unfollower.py) ![Supported Python versions](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg) ![License](https://img.shields.io/github/license/arnavb/github_unfollower.py.svg)
+
+
 A simply utility script which unfollows all the users on Github
 who don't care enough to follow you back.
 
