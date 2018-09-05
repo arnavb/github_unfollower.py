@@ -19,7 +19,7 @@ This script can be run as follows:
 
 ```
 Usage:
-  github_unfollower.py &ltusername&gt &ltpassword&gt
+  github_unfollower.py <username> <password>
   github_unfollower.py (-h | --help | --version)
 ```
 
