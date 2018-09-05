@@ -8,7 +8,7 @@ who don't care enough to follow you back.
 This script requires at least Python 3.6. To run, all you have
 to do is:
 
-1. Download `github_unfollower.py` and `requirements.txt`
+1. Download [`github_unfollower.py`](https://raw.githubusercontent.com/arnavb/github_unfollower.py/master/github_unfollower.py) and [`requirements.txt`](https://raw.githubusercontent.com/arnavb/github_unfollower.py/master/requirements.txt)
    to a folder of your choice.
 2. Create a virtualenv (not necessary, but recommended).
 3. Run `pip install -r requirements.txt`.
