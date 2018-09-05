@@ -10,10 +10,10 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -56,7 +56,7 @@ class AuthenticatedGithubUser:
         self._api_session = requests.Session()
 
         self._api_session.auth = (username, github_pa_token)
-        
+
         # Verify whether everything is set up properly (auth, etc.)
         try:
             test_response = self._api_session.get(
@@ -64,12 +64,12 @@ class AuthenticatedGithubUser:
             test_response.raise_for_status()
         except requests.exceptions.HTTPError:
             # TODO: Properly handle errors here
-            
+
             # 401 -> Not authenticated
             if test_response.status_code == 401:
                 print('Error! 401 Unauthorized!')
             else:
-                print(f'HTTP Error! (Response {current_response.status_code})')
+                print(f'HTTP Error! (Response {test_response.status_code})')
             raise
 
     # TODO: A better name and API for this function
