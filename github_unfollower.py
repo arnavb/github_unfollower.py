@@ -94,8 +94,8 @@ class AuthenticatedGithubUser:
                 print(f'HTTP Error! (Response {current_response.status_code})')
                 break
 
-            result.extend(
-                [follower['login'] for follower in current_response.json()])
+            result += [
+                follower['login'] for follower in current_response.json()]
 
             try:
                 current_url = current_response.links['next']['url']
