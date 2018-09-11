@@ -52,7 +52,7 @@ import requests
 
 
 class AuthenticatedGithubUser:
-    def __init__(self, username, github_pa_token):
+    def __init__(self, username: str, github_pa_token: str):
         self._api_session = requests.Session()
 
         self._api_session.auth = (username, github_pa_token)
@@ -73,7 +73,7 @@ class AuthenticatedGithubUser:
             raise
 
     # TODO: A better name and API for this function
-    def _followers_or_following(self, followers_or_following):
+    def _followers_or_following(self, followers_or_following: str):
         """Returns either the user's followers or who they are following"""
 
         if followers_or_following not in ['followers', 'following']:
@@ -119,11 +119,11 @@ class AuthenticatedGithubUser:
         return self._followers_or_following('following')
 
     # Not implemented because this function is not used for this script
-    def follow(self, username):
+    def follow(self, username: str):
         """Follow a user on Github"""
         raise NotImplementedError('This function is not used for this script!')
 
-    def unfollow(self, username):
+    def unfollow(self, username: str):
         """Unfollow a user on Github"""
 
         try:
