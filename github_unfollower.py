@@ -78,7 +78,7 @@ class AuthenticatedGithubUser:
         """Returns either the user's followers or who they are following"""
 
         if followers_or_following not in ['followers', 'following']:
-            raise ValueError('followers_or_following must be \'followers\''
+            raise ValueError('followers_or_following must be either \'followers\''
                              'or \'following\'!')
 
         result = []
