@@ -46,13 +46,14 @@ Options:
 
 from functools import lru_cache
 import sys
+from typing import List, Optional
 
 from docopt import docopt
 import requests
 
 
 class AuthenticatedGithubUser:
-    def __init__(self, username: str, github_pa_token: str):
+    def __init__(self, username: str, github_pa_token: str) -> None:
         self._api_session = requests.Session()
 
         self._api_session.auth = (username, github_pa_token)
@@ -73,7 +74,7 @@ class AuthenticatedGithubUser:
             raise
 
     # TODO: A better name and API for this function
-    def _followers_or_following(self, followers_or_following: str):
+    def _followers_or_following(self, followers_or_following: str) -> List[str]:
         """Returns either the user's followers or who they are following"""
 
         if followers_or_following not in ['followers', 'following']:
@@ -106,24 +107,24 @@ class AuthenticatedGithubUser:
 
     @property
     @lru_cache(maxsize=None)
-    def followers(self):
+    def followers(self) -> List[str]:
         """"Get the user's followers"""
 
         return self._followers_or_following('followers')
 
     @property
     @lru_cache(maxsize=None)
-    def following(self):
+    def following(self) -> List[str]:
         """Get who the user is following"""
 
         return self._followers_or_following('following')
 
     # Not implemented because this function is not used for this script
-    def follow(self, username: str):
+    def follow(self, username: str) -> None:
         """Follow a user on Github"""
         raise NotImplementedError('This function is not used for this script!')
 
-    def unfollow(self, username: str):
+    def unfollow(self, username: str) -> None:
         """Unfollow a user on Github"""
 
         try:
@@ -141,7 +142,7 @@ class AuthenticatedGithubUser:
         self._api_session.close()
 
 
-def main():
+def main() -> Optional[int]:
     if len(sys.argv) == 1:  # Show help screen when no arguments are passed
         sys.argv.append('-h')
 
