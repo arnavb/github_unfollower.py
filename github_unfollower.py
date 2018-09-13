@@ -135,10 +135,10 @@ class AuthenticatedGithubUser:
             # TODO: Properly handle HTTP error
             print(f'HTTP Error! (Response {response.status_code})')
 
-    def __enter__(self):
+    def __enter__(self) -> AuthenticatedGithubUser:
         return self
 
-    def __exit__(self, exception_type, exception_value, traceback):
+    def __exit__(self, exception_type, exception_value, traceback) -> None:
         self._api_session.close()
 
 
