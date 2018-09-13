@@ -58,21 +58,6 @@ class AuthenticatedGithubUser:
 
         self._api_session.auth = (username, github_pa_token)
 
-        # Verify whether everything is set up properly (auth, etc.)
-        try:
-            test_response = self._api_session.get(
-                'https://api.github.com', timeout=5)
-            test_response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            # TODO: Properly handle errors here
-
-            # 401 -> Not authenticated
-            if test_response.status_code == 401:
-                print('Error! 401 Unauthorized!')
-            else:
-                print(f'HTTP Error! (Response {test_response.status_code})')
-            raise
-
     # TODO: A better name and API for this function
     def _followers_or_following(self, followers_or_following: str) -> List[str]:
         """Returns either the user's followers or who they are following"""
