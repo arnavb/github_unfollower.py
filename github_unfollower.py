@@ -52,52 +52,51 @@ from docopt import docopt
 import requests
 
 
+class GithubHTTPError(RuntimeError):
+    def __init__(self, message: str, status_code: int):
+        super().__init__(message)
+        self._status_code = status_code
+
+    @property
+    def status_code(self) -> int:
+        return self._status_code
+
+
 class AuthenticatedGithubUser:
-    def __init__(self, username: str, github_pa_token: str) -> None:
+    def __init__(self, username: str, password: str):
         self._api_session = requests.Session()
 
-        self._api_session.auth = (username, github_pa_token)
+        self._api_session.auth = (username, password)
 
-        # Verify whether everything is set up properly (auth, etc.)
+    def _handle_HTTP_errors(self, response: requests.Response) -> None:
         try:
-            test_response = self._api_session.get(
-                'https://api.github.com', timeout=5)
-            test_response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            # TODO: Properly handle errors here
-
-            # 401 -> Not authenticated
-            if test_response.status_code == 401:
-                print('Error! 401 Unauthorized!')
-            else:
-                print(f'HTTP Error! (Response {test_response.status_code})')
-            raise
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            raise GithubHTTPError(
+                f'HTTP Error! Status code: {response.status_code}',
+                response.status_code) from http_error
 
     # TODO: A better name and API for this function
-    def _followers_or_following(self, followers_or_following: str) -> List[str]:
+    def _followers_or_following(self, followers_or_following: str) -> List[str]:  # noqa
         """Returns either the user's followers or who they are following"""
 
         if followers_or_following not in ['followers', 'following']:
-            raise ValueError('followers_or_following must be \'followers\''
-                             'or \'following\'!')
+            raise ValueError('followers_or_following must be either '
+                             '\'followers\' or \'following\'!')
 
         result = []
 
         current_url = f'https://api.github.com/user/{followers_or_following}?page=1'  # noqa
 
         while True:
-            try:
-                current_response = self._api_session.get(
-                    current_url, timeout=5)
-                current_response.raise_for_status()
-            except requests.exceptions.HTTPError:
-                # TODO: Properly handle HTTP error
-                print(f'HTTP Error! (Response {current_response.status_code})')
-                break
+            current_response = self._api_session.get(
+                current_url, timeout=5)
+            self._handle_HTTP_errors(current_response)
 
             result += [
                 follower['login'] for follower in current_response.json()]
 
+            # Traverse Github pagination through link headers
             try:
                 current_url = current_response.links['next']['url']
             except KeyError:
@@ -122,18 +121,14 @@ class AuthenticatedGithubUser:
     # Not implemented because this function is not used for this script
     def follow(self, username: str) -> None:
         """Follow a user on Github"""
-        raise NotImplementedError('This function is not used for this script!')
+        pass
 
     def unfollow(self, username: str) -> None:
         """Unfollow a user on Github"""
 
-        try:
-            response = self._api_session.delete(
-                f'https://api.github.com/user/following/{username}', timeout=5)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            # TODO: Properly handle HTTP error
-            print(f'HTTP Error! (Response {response.status_code})')
+        response = self._api_session.delete(
+            f'https://api.github.com/user/following/{username}', timeout=5)
+        self._handle_HTTP_errors(response)
 
     def __enter__(self):
         return self
@@ -142,24 +137,35 @@ class AuthenticatedGithubUser:
         self._api_session.close()
 
 
-def main() -> Optional[int]:
-    if len(sys.argv) == 1:  # Show help screen when no arguments are passed
-        sys.argv.append('-h')
+def main(passed_argv: List[str]) -> Optional[int]:
+    argv = passed_argv[1:]
+    if len(argv) == 1:  # Show help screen when no arguments are passed
+        argv.append('-h')
 
-    cmd_arguments = docopt(__doc__, version='github_unfollower.py v1.0.0')
+    cmd_arguments = docopt(__doc__, argv=argv,
+                           version='github_unfollower.py v1.0.0')
 
     unfollowed_users = []
 
     with AuthenticatedGithubUser(cmd_arguments['<username>'],
                                  cmd_arguments['<password>']) as github_user:
+        try:
+            for user in github_user.following:
+                if user not in github_user.followers:
+                    github_user.unfollow(user)
+                    unfollowed_users.append(user)
 
-        for user in github_user.following:
-            if user not in github_user.followers:
-                github_user.unfollow(user)
-                unfollowed_users.append(user)
+        except GithubHTTPError as github_http_error:
+            if github_http_error.status_code == 401:
+                print('Error! The Github credentials you entered were '
+                      'incorrect.')
+            else:
+                print(github_http_error)
+
+            return 1
 
     print(f'The following users were unfollowed: {unfollowed_users}')
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv))
