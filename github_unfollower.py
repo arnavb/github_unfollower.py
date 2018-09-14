@@ -137,11 +137,13 @@ class AuthenticatedGithubUser:
         self._api_session.close()
 
 
-def main() -> Optional[int]:
-    if len(sys.argv) == 1:  # Show help screen when no arguments are passed
-        sys.argv.append('-h')
+def main(passed_argv: List[str]) -> Optional[int]:
+    argv = passed_argv[1:]
+    if len(argv) == 1:  # Show help screen when no arguments are passed
+        argv.append('-h')
 
-    cmd_arguments = docopt(__doc__, version='github_unfollower.py v1.0.0')
+    cmd_arguments = docopt(__doc__, argv=argv,
+                           version='github_unfollower.py v1.0.0')
 
     unfollowed_users = []
 
@@ -169,4 +171,4 @@ def main() -> Optional[int]:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(main(sys.argv))
