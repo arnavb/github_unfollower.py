@@ -53,7 +53,7 @@ import requests
 
 
 class GithubHTTPError(RuntimeError):
-    def __init__(self, message: str, status_code: int) -> None:
+    def __init__(self, message: str, status_code: int):
         super().__init__(message)
         self._status_code = status_code
 
@@ -63,7 +63,7 @@ class GithubHTTPError(RuntimeError):
 
 
 class AuthenticatedGithubUser:
-    def __init__(self, username: str, password: str) -> None:
+    def __init__(self, username: str, password: str):
         self._api_session = requests.Session()
 
         self._api_session.auth = (username, password)
@@ -130,10 +130,10 @@ class AuthenticatedGithubUser:
             f'https://api.github.com/user/following/{username}', timeout=5)
         self._handle_HTTP_errors(response)
 
-    def __enter__(self) -> 'AuthenticatedGithubUser':
+    def __enter__(self):
         return self
 
-    def __exit__(self, exception_type, exception_value, traceback) -> None:
+    def __exit__(self, exception_type, exception_value, traceback):
         self._api_session.close()
 
 
