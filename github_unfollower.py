@@ -159,9 +159,6 @@ def main(passed_argv: List[str]) -> Optional[int]:
             if github_http_error.status_code == 401:
                 print('Error! The Github credentials you entered were '
                       'incorrect.')
-            elif github_http_error.status_code == 404:
-                print('Error! No user was found with the username '
-                      f'\'{cmd_arguments["username"]}\'!')
             else:
                 print(github_http_error)
 
