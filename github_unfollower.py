@@ -51,6 +51,7 @@ from typing import List, Optional
 from docopt import docopt
 import requests
 
+
 class GithubHTTPError(RuntimeError):
     def __init__(self, message: str, status_code: int) -> None:
         super().__init__(message)
@@ -59,6 +60,7 @@ class GithubHTTPError(RuntimeError):
     @property
     def status_code(self) -> int:
         return self._status_code
+
 
 class AuthenticatedGithubUser:
     def __init__(self, username: str, password: str) -> None:
@@ -70,16 +72,17 @@ class AuthenticatedGithubUser:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
-            raise GithubHTTPError(f'HTTP Error! Status code: {response.status_code}',
-                                  response.status_code) from http_error
+            raise GithubHTTPError(
+                f'HTTP Error! Status code: {response.status_code}',
+                response.status_code) from http_error
 
     # TODO: A better name and API for this function
-    def _followers_or_following(self, followers_or_following: str) -> List[str]:
+    def _followers_or_following(self, followers_or_following: str) -> List[str]:  # noqa
         """Returns either the user's followers or who they are following"""
 
         if followers_or_following not in ['followers', 'following']:
-            raise ValueError('followers_or_following must be either \'followers\''
-                             'or \'following\'!')
+            raise ValueError('followers_or_following must be either '
+                             '\'followers\' or \'following\'!')
 
         result = []
 
@@ -93,6 +96,7 @@ class AuthenticatedGithubUser:
             result += [
                 follower['login'] for follower in current_response.json()]
 
+            # Traverse Github pagination through link headers
             try:
                 current_url = current_response.links['next']['url']
             except KeyError:
@@ -148,12 +152,14 @@ def main() -> Optional[int]:
                 if user not in github_user.followers:
                     github_user.unfollow(user)
                     unfollowed_users.append(user)
+
         except GithubHTTPError as github_http_error:
             if github_http_error.status_code == 401:
                 print('Error! The Github credentials you entered were '
                       'incorrect.')
             elif github_http_error.status_code == 404:
-                print(f'Error! No user was found called {cmd_arguments["username"]}!')
+                print('Error! No user was found with the username '
+                      f'\'{cmd_arguments["username"]}\'!')
             else:
                 print(github_http_error)
 
