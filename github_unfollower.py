@@ -61,10 +61,10 @@ class GithubHTTPError(RuntimeError):
         return self._status_code
 
 class AuthenticatedGithubUser:
-    def __init__(self, username: str, github_pa_token: str) -> None:
+    def __init__(self, username: str, password: str) -> None:
         self._api_session = requests.Session()
 
-        self._api_session.auth = (username, github_pa_token)
+        self._api_session.auth = (username, password)
 
     def _handle_HTTP_errors(self, response: requests.Response) -> None:
         try:
