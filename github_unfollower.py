@@ -76,18 +76,17 @@ class AuthenticatedGithubUser:
                 f'HTTP Error! Status code: {response.status_code}',
                 response.status_code) from http_error
 
-    # TODO: A better name and API for this function
     @lru_cache(maxsize=None)
-    def _followers_or_following(self, followers_or_following: str) -> List[str]:  # noqa
+    def _get_follower_data(self, query: str) -> List[str]:
         """Returns either the user's followers or who they are following"""
 
-        if followers_or_following not in ['followers', 'following']:
-            raise ValueError('followers_or_following must be either '
-                             '\'followers\' or \'following\'!')
+        if query not in ['followers', 'following']:
+            raise ValueError('query must be either \'followers\' or '
+                             '\'following\'!')
 
         result = []
 
-        current_url = f'https://api.github.com/user/{followers_or_following}?page=1'  # noqa
+        current_url = f'https://api.github.com/user/{query}?page=1'
 
         while True:
             current_response = self._api_session.get(
@@ -109,13 +108,13 @@ class AuthenticatedGithubUser:
     def followers(self) -> List[str]:
         """"Get the user's followers"""
 
-        return self._followers_or_following('followers')
+        return self._get_follower_data('followers')
 
     @property
     def following(self) -> List[str]:
         """Get who the user is following"""
 
-        return self._followers_or_following('following')
+        return self._get_follower_data('following')
 
     # Not implemented because this function is not used for this script
     def follow(self, username: str) -> None:
