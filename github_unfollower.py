@@ -77,6 +77,7 @@ class AuthenticatedGithubUser:
                 response.status_code) from http_error
 
     # TODO: A better name and API for this function
+    @lru_cache(maxsize=None)
     def _followers_or_following(self, followers_or_following: str) -> List[str]:  # noqa
         """Returns either the user's followers or who they are following"""
 
@@ -105,14 +106,12 @@ class AuthenticatedGithubUser:
         return result
 
     @property
-    @lru_cache(maxsize=None)
     def followers(self) -> List[str]:
         """"Get the user's followers"""
 
         return self._followers_or_following('followers')
 
     @property
-    @lru_cache(maxsize=None)
     def following(self) -> List[str]:
         """Get who the user is following"""
 
