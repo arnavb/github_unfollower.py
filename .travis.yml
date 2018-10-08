@@ -11,7 +11,8 @@ cache: pip
 
 install:
   - pip install -r requirements.txt
-  - pip install flake8
+  - pip install flake8 mypy
 
 script:
   - flake8 github_unfollower.py
+  - mypy github_unfollower.py || true

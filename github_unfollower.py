@@ -53,7 +53,7 @@ import requests
 
 
 class GithubHTTPError(RuntimeError):
-    def __init__(self, message: str, status_code: int):
+    def __init__(self, message: str, status_code: int) -> None:
         super().__init__(message)
         self._status_code = status_code
 
@@ -63,7 +63,7 @@ class GithubHTTPError(RuntimeError):
 
 
 class AuthenticatedGithubUser:
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str) -> None:
         self._api_session = requests.Session()
 
         self._api_session.auth = (username, password)
@@ -84,7 +84,7 @@ class AuthenticatedGithubUser:
             raise ValueError('query must be either \'followers\' or '
                              '\'following\'!')
 
-        result = []
+        result: List[str] = []
 
         current_url = f'https://api.github.com/user/{query}?page=1'
 
