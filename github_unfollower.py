@@ -73,32 +73,29 @@ class AuthenticatedGithubUser:
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
             raise GithubHTTPError(
-                f'HTTP Error! Status code: {response.status_code}',
-                response.status_code) from http_error
+                f"HTTP Error! Status code: {response.status_code}", response.status_code
+            ) from http_error
 
     @lru_cache(maxsize=None)
     def _get_follower_data(self, query: str) -> List[str]:
         """Returns either the user's followers or who they are following"""
 
-        if query not in ['followers', 'following']:
-            raise ValueError('query must be either \'followers\' or '
-                             '\'following\'!')
+        if query not in ["followers", "following"]:
+            raise ValueError("query must be either 'followers' or " "'following'!")
 
         result: List[str] = []
 
-        current_url = f'https://api.github.com/user/{query}?page=1'
+        current_url = f"https://api.github.com/user/{query}?page=1"
 
         while True:
-            current_response = self._api_session.get(
-                current_url, timeout=5)
+            current_response = self._api_session.get(current_url, timeout=5)
             self._handle_http_errors(current_response)
 
-            result += [
-                follower['login'] for follower in current_response.json()]
+            result += [follower["login"] for follower in current_response.json()]
 
             # Traverse Github pagination through link headers
             try:
-                current_url = current_response.links['next']['url']
+                current_url = current_response.links["next"]["url"]
             except KeyError:
                 break
 
@@ -108,13 +105,13 @@ class AuthenticatedGithubUser:
     def followers(self) -> List[str]:
         """"Get the user's followers"""
 
-        return self._get_follower_data('followers')
+        return self._get_follower_data("followers")
 
     @property
     def following(self) -> List[str]:
         """Get who the user is following"""
 
-        return self._get_follower_data('following')
+        return self._get_follower_data("following")
 
     # Not implemented because this function is not used for this script
     def follow(self, username: str) -> None:
@@ -125,7 +122,8 @@ class AuthenticatedGithubUser:
         """Unfollow a user on Github"""
 
         response = self._api_session.delete(
-            f'https://api.github.com/user/following/{username}', timeout=5)
+            f"https://api.github.com/user/following/{username}", timeout=5
+        )
         self._handle_http_errors(response)
 
     def __enter__(self):
@@ -138,15 +136,15 @@ class AuthenticatedGithubUser:
 def main(passed_argv: List[str]) -> Optional[int]:
     argv = passed_argv[1:]
     if len(argv) == 1:  # Show help screen when no arguments are passed
-        argv.append('-h')
+        argv.append("-h")
 
-    cmd_arguments = docopt(__doc__, argv=argv,
-                           version='github_unfollower.py v1.0.0')
+    cmd_arguments = docopt(__doc__, argv=argv, version="github_unfollower.py v1.0.0")
 
     unfollowed_users = []
 
-    with AuthenticatedGithubUser(cmd_arguments['<username>'],
-                                 cmd_arguments['<password>']) as github_user:
+    with AuthenticatedGithubUser(
+        cmd_arguments["<username>"], cmd_arguments["<password>"]
+    ) as github_user:
         try:
             for user in github_user.following:
                 if user not in github_user.followers:
@@ -155,16 +153,15 @@ def main(passed_argv: List[str]) -> Optional[int]:
 
         except GithubHTTPError as github_http_error:
             if github_http_error.status_code == 401:
-                print('Error! The Github credentials you entered were '
-                      'incorrect.')
+                print("Error! The Github credentials you entered were " "incorrect.")
             else:
                 print(github_http_error)
 
             return 1
 
-    print(f'The following users were unfollowed: {unfollowed_users}')
+    print(f"The following users were unfollowed: {unfollowed_users}")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main(sys.argv))
