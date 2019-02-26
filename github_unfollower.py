@@ -68,7 +68,7 @@ class AuthenticatedGithubUser:
 
         self._api_session.auth = (username, password)
 
-    def _handle_HTTP_errors(self, response: requests.Response) -> None:
+    def _handle_http_errors(self, response: requests.Response) -> None:
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
@@ -91,7 +91,7 @@ class AuthenticatedGithubUser:
         while True:
             current_response = self._api_session.get(
                 current_url, timeout=5)
-            self._handle_HTTP_errors(current_response)
+            self._handle_http_errors(current_response)
 
             result += [
                 follower['login'] for follower in current_response.json()]
@@ -119,14 +119,14 @@ class AuthenticatedGithubUser:
     # Not implemented because this function is not used for this script
     def follow(self, username: str) -> None:
         """Follow a user on Github"""
-        pass
+        # TODO
 
     def unfollow(self, username: str) -> None:
         """Unfollow a user on Github"""
 
         response = self._api_session.delete(
             f'https://api.github.com/user/following/{username}', timeout=5)
-        self._handle_HTTP_errors(response)
+        self._handle_http_errors(response)
 
     def __enter__(self):
         return self
@@ -163,6 +163,7 @@ def main(passed_argv: List[str]) -> Optional[int]:
             return 1
 
     print(f'The following users were unfollowed: {unfollowed_users}')
+    return 0
 
 
 if __name__ == '__main__':

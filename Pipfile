@@ -10,6 +10,7 @@ mypy = "==0.660"
 
 [packages]
 requests = "*"
+docopt = "*"
 
 [requires]
 python_version = "3.6"
