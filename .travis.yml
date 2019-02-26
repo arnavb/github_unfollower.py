@@ -15,5 +15,5 @@ install:
 
 script:
   - pipenv run black --check github_unfollower.py
-  - mypy github_unfollower.py || true
-  - pylint github_unfollower.py || true
+  - pipenv run mypy github_unfollower.py || true
+  - pipenv run pylint github_unfollower.py || true
