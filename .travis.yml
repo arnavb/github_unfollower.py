@@ -10,9 +10,10 @@ python:
 cache: pip
 
 install:
-  - pip install -r requirements.txt
-  - pip install flake8 mypy
+  - pip install pipenv
+  - pipenv install --dev
 
 script:
-  - flake8 github_unfollower.py
-  - mypy github_unfollower.py || true
+  - pipenv run black --check github_unfollower.py
+  - pipenv run mypy github_unfollower.py
+  - pipenv run pylint github_unfollower.py || true

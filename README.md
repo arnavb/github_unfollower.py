@@ -11,14 +11,12 @@ who don't care enough to follow you back.
 This script requires at least Python 3.6. To install it, all you have
 to do is:
 
-1. Download [`github_unfollower.py`](https://raw.githubusercontent.com/arnavb/github_unfollower.py/master/github_unfollower.py) and [`requirements.txt`](https://raw.githubusercontent.com/arnavb/github_unfollower.py/master/requirements.txt)
-   to a folder of your choice.
-2. Create a virtualenv (not necessary, but recommended).
-3. Run `pip install -r requirements.txt`.
+1. Clone this repository to a folder of your choice.
+2. Run `pipenv install`.
 
 ## Run
 
-This script can be run as follows:
+This script can be run as follows (using `pipenv run` or with a new subshell created through `pipenv shell`):
 
 ```
 Usage:
