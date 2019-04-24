@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 black = "*"
-mypy = "==0.660"
+mypy = "*"
 
 [packages]
 requests = "*"
