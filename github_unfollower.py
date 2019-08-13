@@ -116,7 +116,6 @@ class AuthenticatedGithubUser:
     # Not implemented because this function is not used for this script
     def follow(self, username: str) -> None:
         """Follow a user on Github"""
-        # TODO
 
     def unfollow(self, username: str) -> None:
         """Unfollow a user on Github"""
