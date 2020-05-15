@@ -85,7 +85,11 @@ class AuthenticatedGithubUser:
 
         result: List[str] = []
 
-        current_url = f"https://api.github.com/user/{query}?page=1"
+        page = 1
+        current_url = f"https://api.github.com/user/{query}?page={page}"
+
+        prev_res_len = -1
+        curr_res_len = -1
 
         while True:
             current_response = self._api_session.get(current_url, timeout=5)
@@ -93,9 +97,15 @@ class AuthenticatedGithubUser:
 
             result += [follower["login"] for follower in current_response.json()]
 
+            curr_res_len = len(result)
+            if curr_res_len == prev_res_len:
+                break
+            prev_res_len = curr_res_len
+
             # Traverse Github pagination through link headers
             try:
-                current_url = current_response.links["next"]["url"]
+                page += 1
+                current_url = f"https://api.github.com/user/{query}?page={page}"
             except KeyError:
                 break
 
